@@ -1,64 +1,46 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import TemperatureBox from "./components/TemperatureBox";
 
-const aSimpleElement = <h1>Hello all!</h1>;
-
-function StatelessComponent() {
-  return <h1>Hello all from stateless!</h1>;
-}
-
-class StatefulComponent extends React.Component {
+class Converter extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      name: "World",
-      date: new Date(),
+      celsius: 0,
+      fahrenheit: 0,
     };
+
+    this.changeTemperature = this.changeTemperature.bind(this);
   }
 
-  handleChange(event) {
-    const name = event.target.value;
-    this.setState({ name: name });
-  }
-
-  tick() {
-    this.setState({ date: new Date() });
-  }
-
-  componentDidMount() {
-    console.log("Mounted!");
-    setInterval(() => {
-      console.log("tick");
-      this.tick();
-    }, 1000);
+  changeTemperature(value, scale) {
+    switch (scale) {
+      case "celsius":
+        this.setState({ fahrenheit: value * 1.8 + 32, celsius: value });
+        return;
+      case "fahrenheit":
+        this.setState({ celsius: (value - 32) / 1.8, fahrenheit: value });
+        return;
+    }
   }
 
   render() {
     return (
-      <>
-        <h1>Hello {this.state.name}!</h1>
-        <h1>It's {this.state.date.toLocaleTimeString()}</h1>
-        <input
-          type="text"
-          onChange={(event) => {
-            console.log(event);
-            this.handleChange(event);
-          }}
+      <main>
+        <TemperatureBox
+          temperatureName="celsius"
+          temperatureValue={this.state.celsius}
+          changeTemperature={this.changeTemperature}
         />
-      </>
+
+        <TemperatureBox
+          temperatureName="fahrenheit"
+          temperatureValue={this.state.fahrenheit}
+          changeTemperature={this.changeTemperature}
+        />
+      </main>
     );
   }
 }
 
-const app = (
-  <>
-    {aSimpleElement}
-    <hr />
-    <StatelessComponent />
-    <hr />
-    <StatefulComponent />
-  </>
-);
-
-ReactDOM.render(app, document.getElementById("root"));
+ReactDOM.render(<Converter />, document.getElementById("root"));
